@@ -2,17 +2,73 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
 import { useNavigate } from 'react-router-dom';
+import ServiceModal from '@/components/admin/ServiceModal';
+import SpecialistModal from '@/components/admin/SpecialistModal';
+import DeviceModal from '@/components/admin/DeviceModal';
+import ReviewModal from '@/components/admin/ReviewModal';
+import FAQModal from '@/components/admin/FAQModal';
+
+interface Service {
+  id: number;
+  icon: string;
+  title: string;
+  description: string;
+  features: string[];
+}
+
+interface Specialist {
+  id: number;
+  name: string;
+  role: string;
+  experience: string;
+  description: string;
+}
+
+interface Device {
+  id: number;
+  type: string;
+  description: string;
+  price: string;
+  features: string[];
+}
+
+interface Review {
+  id: number;
+  name: string;
+  age: number;
+  text: string;
+  rating: number;
+}
+
+interface FAQ {
+  id: number;
+  question: string;
+  answer: string;
+}
 
 const Admin = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('services');
 
-  const [services, setServices] = useState([
+  const [serviceModalOpen, setServiceModalOpen] = useState(false);
+  const [editingService, setEditingService] = useState<Service | null>(null);
+  
+  const [specialistModalOpen, setSpecialistModalOpen] = useState(false);
+  const [editingSpecialist, setEditingSpecialist] = useState<Specialist | null>(null);
+  
+  const [deviceModalOpen, setDeviceModalOpen] = useState(false);
+  const [editingDevice, setEditingDevice] = useState<Device | null>(null);
+  
+  const [reviewModalOpen, setReviewModalOpen] = useState(false);
+  const [editingReview, setEditingReview] = useState<Review | null>(null);
+  
+  const [faqModalOpen, setFaqModalOpen] = useState(false);
+  const [editingFaq, setEditingFaq] = useState<FAQ | null>(null);
+
+  const [services, setServices] = useState<Service[]>([
     {
       id: 1,
       icon: 'Stethoscope',
@@ -29,7 +85,7 @@ const Admin = () => {
     }
   ]);
 
-  const [specialists, setSpecialists] = useState([
+  const [specialists, setSpecialists] = useState<Specialist[]>([
     {
       id: 1,
       name: 'Иванова Елена Петровна',
@@ -39,7 +95,7 @@ const Admin = () => {
     }
   ]);
 
-  const [devices, setDevices] = useState([
+  const [devices, setDevices] = useState<Device[]>([
     {
       id: 1,
       type: 'Заушные',
@@ -49,7 +105,7 @@ const Admin = () => {
     }
   ]);
 
-  const [reviews, setReviews] = useState([
+  const [reviews, setReviews] = useState<Review[]>([
     {
       id: 1,
       name: 'Анна Михайловна',
@@ -59,7 +115,7 @@ const Admin = () => {
     }
   ]);
 
-  const [faqs, setFaqs] = useState([
+  const [faqs, setFaqs] = useState<FAQ[]>([
     {
       id: 1,
       question: 'Как понять, что мне нужен слуховой аппарат?',
@@ -67,20 +123,90 @@ const Admin = () => {
     }
   ]);
 
+  const handleSaveService = (service: Service) => {
+    const exists = services.find(s => s.id === service.id);
+    if (exists) {
+      setServices(services.map(s => s.id === service.id ? service : s));
+    } else {
+      setServices([...services, service]);
+    }
+  };
+
+  const handleEditService = (service: Service) => {
+    setEditingService(service);
+    setServiceModalOpen(true);
+  };
+
   const handleDeleteService = (id: number) => {
     setServices(services.filter(s => s.id !== id));
+  };
+
+  const handleSaveSpecialist = (specialist: Specialist) => {
+    const exists = specialists.find(s => s.id === specialist.id);
+    if (exists) {
+      setSpecialists(specialists.map(s => s.id === specialist.id ? specialist : s));
+    } else {
+      setSpecialists([...specialists, specialist]);
+    }
+  };
+
+  const handleEditSpecialist = (specialist: Specialist) => {
+    setEditingSpecialist(specialist);
+    setSpecialistModalOpen(true);
   };
 
   const handleDeleteSpecialist = (id: number) => {
     setSpecialists(specialists.filter(s => s.id !== id));
   };
 
+  const handleSaveDevice = (device: Device) => {
+    const exists = devices.find(d => d.id === device.id);
+    if (exists) {
+      setDevices(devices.map(d => d.id === device.id ? device : d));
+    } else {
+      setDevices([...devices, device]);
+    }
+  };
+
+  const handleEditDevice = (device: Device) => {
+    setEditingDevice(device);
+    setDeviceModalOpen(true);
+  };
+
   const handleDeleteDevice = (id: number) => {
     setDevices(devices.filter(d => d.id !== id));
   };
 
+  const handleSaveReview = (review: Review) => {
+    const exists = reviews.find(r => r.id === review.id);
+    if (exists) {
+      setReviews(reviews.map(r => r.id === review.id ? review : r));
+    } else {
+      setReviews([...reviews, review]);
+    }
+  };
+
+  const handleEditReview = (review: Review) => {
+    setEditingReview(review);
+    setReviewModalOpen(true);
+  };
+
   const handleDeleteReview = (id: number) => {
     setReviews(reviews.filter(r => r.id !== id));
+  };
+
+  const handleSaveFaq = (faq: FAQ) => {
+    const exists = faqs.find(f => f.id === faq.id);
+    if (exists) {
+      setFaqs(faqs.map(f => f.id === faq.id ? faq : f));
+    } else {
+      setFaqs([...faqs, faq]);
+    }
+  };
+
+  const handleEditFaq = (faq: FAQ) => {
+    setEditingFaq(faq);
+    setFaqModalOpen(true);
   };
 
   const handleDeleteFaq = (id: number) => {
@@ -129,7 +255,14 @@ const Admin = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
                     <span>Управление услугами</span>
-                    <Button size="sm" className="bg-primary hover:bg-secondary">
+                    <Button 
+                      size="sm" 
+                      className="bg-primary hover:bg-secondary"
+                      onClick={() => {
+                        setEditingService(null);
+                        setServiceModalOpen(true);
+                      }}
+                    >
                       <Icon name="Plus" className="mr-2" size={16} />
                       Добавить услугу
                     </Button>
@@ -150,7 +283,11 @@ const Admin = () => {
                             </div>
                           </div>
                           <div className="flex gap-2">
-                            <Button size="sm" variant="outline">
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => handleEditService(service)}
+                            >
                               <Icon name="Pencil" size={16} />
                             </Button>
                             <Button 
@@ -179,7 +316,14 @@ const Admin = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
                     <span>Управление специалистами</span>
-                    <Button size="sm" className="bg-primary hover:bg-secondary">
+                    <Button 
+                      size="sm" 
+                      className="bg-primary hover:bg-secondary"
+                      onClick={() => {
+                        setEditingSpecialist(null);
+                        setSpecialistModalOpen(true);
+                      }}
+                    >
                       <Icon name="Plus" className="mr-2" size={16} />
                       Добавить специалиста
                     </Button>
@@ -202,7 +346,11 @@ const Admin = () => {
                             </div>
                           </div>
                           <div className="flex gap-2">
-                            <Button size="sm" variant="outline">
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => handleEditSpecialist(specialist)}
+                            >
                               <Icon name="Pencil" size={16} />
                             </Button>
                             <Button 
@@ -226,7 +374,14 @@ const Admin = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
                     <span>Управление аппаратами</span>
-                    <Button size="sm" className="bg-primary hover:bg-secondary">
+                    <Button 
+                      size="sm" 
+                      className="bg-primary hover:bg-secondary"
+                      onClick={() => {
+                        setEditingDevice(null);
+                        setDeviceModalOpen(true);
+                      }}
+                    >
                       <Icon name="Plus" className="mr-2" size={16} />
                       Добавить аппарат
                     </Button>
@@ -248,7 +403,11 @@ const Admin = () => {
                             </div>
                           </div>
                           <div className="flex gap-2">
-                            <Button size="sm" variant="outline">
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => handleEditDevice(device)}
+                            >
                               <Icon name="Pencil" size={16} />
                             </Button>
                             <Button 
@@ -277,7 +436,14 @@ const Admin = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
                     <span>Управление отзывами</span>
-                    <Button size="sm" className="bg-primary hover:bg-secondary">
+                    <Button 
+                      size="sm" 
+                      className="bg-primary hover:bg-secondary"
+                      onClick={() => {
+                        setEditingReview(null);
+                        setReviewModalOpen(true);
+                      }}
+                    >
                       <Icon name="Plus" className="mr-2" size={16} />
                       Добавить отзыв
                     </Button>
@@ -306,7 +472,11 @@ const Admin = () => {
                             </div>
                           </div>
                           <div className="flex gap-2 ml-4">
-                            <Button size="sm" variant="outline">
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => handleEditReview(review)}
+                            >
                               <Icon name="Pencil" size={16} />
                             </Button>
                             <Button 
@@ -330,7 +500,14 @@ const Admin = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
                     <span>Управление FAQ</span>
-                    <Button size="sm" className="bg-primary hover:bg-secondary">
+                    <Button 
+                      size="sm" 
+                      className="bg-primary hover:bg-secondary"
+                      onClick={() => {
+                        setEditingFaq(null);
+                        setFaqModalOpen(true);
+                      }}
+                    >
                       <Icon name="Plus" className="mr-2" size={16} />
                       Добавить вопрос
                     </Button>
@@ -346,7 +523,11 @@ const Admin = () => {
                             <p className="text-sm text-muted-foreground">{faq.answer}</p>
                           </div>
                           <div className="flex gap-2 ml-4">
-                            <Button size="sm" variant="outline">
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => handleEditFaq(faq)}
+                            >
                               <Icon name="Pencil" size={16} />
                             </Button>
                             <Button 
@@ -367,6 +548,56 @@ const Admin = () => {
           </Tabs>
         </div>
       </div>
+
+      <ServiceModal
+        open={serviceModalOpen}
+        onClose={() => {
+          setServiceModalOpen(false);
+          setEditingService(null);
+        }}
+        onSave={handleSaveService}
+        service={editingService}
+      />
+
+      <SpecialistModal
+        open={specialistModalOpen}
+        onClose={() => {
+          setSpecialistModalOpen(false);
+          setEditingSpecialist(null);
+        }}
+        onSave={handleSaveSpecialist}
+        specialist={editingSpecialist}
+      />
+
+      <DeviceModal
+        open={deviceModalOpen}
+        onClose={() => {
+          setDeviceModalOpen(false);
+          setEditingDevice(null);
+        }}
+        onSave={handleSaveDevice}
+        device={editingDevice}
+      />
+
+      <ReviewModal
+        open={reviewModalOpen}
+        onClose={() => {
+          setReviewModalOpen(false);
+          setEditingReview(null);
+        }}
+        onSave={handleSaveReview}
+        review={editingReview}
+      />
+
+      <FAQModal
+        open={faqModalOpen}
+        onClose={() => {
+          setFaqModalOpen(false);
+          setEditingFaq(null);
+        }}
+        onSave={handleSaveFaq}
+        faq={editingFaq}
+      />
     </div>
   );
 };
