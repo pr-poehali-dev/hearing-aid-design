@@ -7,6 +7,7 @@ import Icon from '@/components/ui/icon';
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('home');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
@@ -164,10 +165,45 @@ const Index = () => {
               ))}
             </div>
 
-            <Button onClick={() => scrollToSection('контакты')} className="bg-primary hover:bg-secondary">
-              Записаться
-            </Button>
+            <div className="flex items-center gap-4">
+              <Button onClick={() => scrollToSection('контакты')} className="hidden md:flex bg-primary hover:bg-secondary">
+                Записаться
+              </Button>
+              
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="md:hidden p-2 hover:bg-accent rounded-lg transition-colors"
+              >
+                <Icon name={mobileMenuOpen ? 'X' : 'Menu'} size={24} className="text-primary" />
+              </button>
+            </div>
           </div>
+
+          {mobileMenuOpen && (
+            <div className="md:hidden mt-4 pb-4 space-y-2 animate-fade-in">
+              {['Главная', 'Услуги', 'Специалисты', 'Аппараты', 'Отзывы', 'FAQ', 'Контакты'].map((item) => (
+                <button
+                  key={item}
+                  onClick={() => {
+                    scrollToSection(item.toLowerCase());
+                    setMobileMenuOpen(false);
+                  }}
+                  className="block w-full text-left px-4 py-3 text-sm font-medium text-foreground/80 hover:text-primary hover:bg-accent rounded-lg transition-colors"
+                >
+                  {item}
+                </button>
+              ))}
+              <Button 
+                onClick={() => {
+                  scrollToSection('контакты');
+                  setMobileMenuOpen(false);
+                }} 
+                className="w-full bg-primary hover:bg-secondary"
+              >
+                Записаться
+              </Button>
+            </div>
+          )}
         </div>
       </nav>
 
